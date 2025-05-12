@@ -1,16 +1,17 @@
 // @ts-nocheck
-import { useState, useEffect } from 'react';
-import { Container, Card, Button } from 'react-bootstrap';
-import axios from 'axios';
+import { Pagination } from 'react-bootstrap';
 
 function Home() {
     const [posts, setPosts] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/posts').then(res => {
-            setPosts(res.data);
+        axios.get(`http://localhost:5000/api/posts?page=${page}`).then(res => {
+            setPosts(res.data.posts);
+            setTotalPages(res.data.pages);
         });
-    }, []);
+    }, [page]);
 
     return (
         <Container className="py-5">
@@ -25,8 +26,15 @@ function Home() {
                     </Card.Body>
                 </Card>
             ))}
+            <Pagination>
+                {Array.from({ length: totalPages }, (_, i) => (
+                    <Pagination.Item key={i + 1} active={i + 1 === page} onClick={() => setPage(i + 1)}>
+                        {i + 1}
+                    </Pagination.Item>
+                ))}
+            </Pagination>
         </Container>
     );
 }
 
-export default Home;
+export default Home
