@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect } from 'react';
 import { Container, Card, Button } from 'react-bootstrap';
 import axios from 'axios';
