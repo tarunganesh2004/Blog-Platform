@@ -37,32 +37,24 @@ def logout():
     return jsonify({"message": "Logged out"}), 200
 
 
-@api.route("/api/posts", methods=["GET", "POST"])
+@api.route('/api/posts', methods=['GET', 'POST'])
 def posts():
-    if request.method == "POST":
-        if not current_user.is_authenticated:
-            return jsonify({"error": "Login required"}), 401
-        data = request.get_json()
-        post = Post(
-            title=data["title"], content=data["content"], user_id=current_user.id
-        )
-        db.session.add(post)
-        db.session.commit()
-        return jsonify({"message": "Post created"}), 201
-    posts = Post.query.order_by(Post.created_at.desc()).all()
-    return jsonify(
-        [
-            {
-                "id": p.id,
-                "title": p.title,
-                "content": p.content,
-                "author": p.author.username,
-                "created_at": p.created_at.isoformat(),
-            }
-            for p in posts
-        ]
-    )
-
+    if request.method == 'POST':
+        # ... (existing POST code)
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+    posts = Post.query.order_by(Post.created_at.desc()).paginate(page=page, per_page=per_page)
+    return jsonify({
+        'posts': [{
+            'id': p.id,
+            'title': p.title,
+            'content': p.content,
+            'author': p.author.username,
+            'created_at': p.created_at.isoformat()
+        } for p in posts.items],
+        'total': posts.total,
+        'pages': posts.pages
+    })
 
 @api.route("/api/posts/<int:id>", methods=["GET", "PUT", "DELETE"])
 @login_required
