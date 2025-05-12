@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from models import db, User
+from routes import *
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key"  # Change this!
@@ -19,7 +20,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-# from routes import *
+app.register_blueprint(api)
 
 with app.app_context():
     db.create_all()
